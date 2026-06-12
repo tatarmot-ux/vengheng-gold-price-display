@@ -1,150 +1,32 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ราคาทองคำสมาคมฯ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* ตั้งค่าพื้นหลังและเลย์เอาต์สำหรับจอแนวตั้ง */
-        body { 
-            background: linear-gradient(180deg, #5b0000 0%, #2a0000 100%); 
-            color: #FFD700; 
-            font-family: 'Sarabun', sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-            justify-content: center; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
-        
-        .header-title {
-            font-size: 6vh;
-            color: #FFFFFF;
-            margin-bottom: 2vh;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-
-        .price-board { 
-            background: rgba(0, 0, 0, 0.6); 
-            padding: 4vh 5vw; 
-            border-radius: 20px; 
-            border: 3px solid #FFD700; 
-            width: 85%; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-
-        .gold-type { 
-            font-size: 5vh; 
-            font-weight: bold;
-            text-align: center;
-            margin-top: 2vh; 
-            border-bottom: 2px solid #FFD700; 
-            padding-bottom: 1vh; 
-            color: #FFF2B2;
-        }
-
-        .price-row { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-top: 3vh; 
-            text-align: center;
-        }
-
-        .price-box {
-            width: 45%;
-        }
-
-        .label { 
-            font-size: 3vh; 
-            color: #CCCCCC; 
-            display: block;
-            margin-bottom: 1vh;
-        }
-
-        .price-value {
-            font-size: 7vh; 
-            font-weight: bold;
-            color: #00FF00; /* สีเขียวให้ตัวเลขเด่น */
-        }
-
-        .update-time { 
-            font-size: 2.5vh; 
-            color: #AAAAAA; 
-            margin-top: 5vh; 
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header-title">สมาคมค้าทองคำ</div>
-    
-    <div class="price-board">
-        <div class="gold-type">ทองคำแท่ง 96.5%</div>
-        <div class="price-row">
-            <div class="price-box">
-                <span class="label">รับซื้อ (บาท)</span>
-                <span class="price-value" id="bar-buy">--</span>
-            </div>
-            <div class="price-box">
-                <span class="label">ขายออก (บาท)</span>
-                <span class="price-value" id="bar-sell">--</span>
-            </div>
-        </div>
-        
-        <div class="gold-type" style="margin-top: 6vh;">ทองรูปพรรณ 96.5%</div>
-        <div class="price-row">
-            <div class="price-box">
-                <span class="label">รับซื้อ (บาท)</span>
-                <span class="price-value" id="ornament-buy">--</span>
-            </div>
-            <div class="price-box">
-                <span class="label">ขายออก (บาท)</span>
-                <span class="price-value" id="ornament-sell">--</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="update-time" id="update-time">อัปเดตข้อมูลล่าสุด: กำลังโหลด...</div>
-
-    <script>
-        // ฟังก์ชันสำหรับดึงข้อมูลราคาทองคำ
+<script>
         async function fetchGoldPrice() {
             try {
-                // หมายเหตุ: URL นี้เป็น Public API พื้นฐานสำหรับการทดสอบ 
-                // หากต้องการความเสถียร 100% ควรใช้ API ที่คุณพัฒนาขึ้นเองในเซิร์ฟเวอร์หลังบ้าน
-                const response = await fetch('https://api.thaigold.info/v1/latest'); 
+                // เรียกใช้ API จากโปรเจกต์ GitHub
+                const response = await fetch('https://api.chnwt.dev/thai-gold-api/latest'); 
                 const data = await response.json();
                 
-                if(data && data.response) {
+                if(data && data.status === "success") {
                     const price = data.response.price;
                     
-                    // ใส่ลูกน้ำ (Comma) ให้ตัวเลขดูอ่านง่ายขึ้น
-                    const formatNumber = (num) => Number(num).toLocaleString('th-TH');
-
-                    document.getElementById('bar-buy').innerText = formatNumber(price.gold_bar.buy);
-                    document.getElementById('bar-sell').innerText = formatNumber(price.gold_bar.sell);
-                    document.getElementById('ornament-buy').innerText = formatNumber(price.gold_jewelry.buy);
-                    document.getElementById('ornament-sell').innerText = formatNumber(price.gold_jewelry.sell);
+                    // เนื่องจาก API ตัวนี้ใส่ลูกน้ำ (,) มาให้แล้ว จึงจับใส่หน้าจอได้เลย
+                    document.getElementById('bar-buy').innerText = price.gold_bar.buy;
+                    document.getElementById('bar-sell').innerText = price.gold_bar.sell;
                     
-                    document.getElementById('update-time').innerText = "อัปเดตข้อมูลล่าสุด: " + data.response.update_time;
+                    // ทองรูปพรรณ ใน API ใช้ชื่อว่า gold
+                    document.getElementById('ornament-buy').innerText = price.gold.buy;
+                    document.getElementById('ornament-sell').innerText = price.gold.sell;
+                    
+                    // แสดงวันและเวลาอัปเดต
+                    document.getElementById('update-time').innerText = 
+                        "อัปเดตข้อมูลล่าสุด: " + data.response.update_date + " " + data.response.update_time;
                 }
             } catch (error) {
                 console.error('ไม่สามารถดึงข้อมูลราคาทองได้:', error);
-                document.getElementById('update-time').innerText = "สถานะ: รอการเชื่อมต่อข้อมูล...";
+                document.getElementById('update-time').innerText = "สถานะ: กำลังเชื่อมต่อ API...";
             }
         }
 
-        // เรียกใช้ฟังก์ชันทันทีที่เปิดจอ
+        // เรียกใช้งานทันที และตั้งเวลารีเฟรชทุก 3 นาที (180000 ms)
         fetchGoldPrice();
-        
-        // ตั้งค่าให้รีเฟรชราคาอัตโนมัติทุกๆ 3 นาที (180,000 มิลลิวินาที)
         setInterval(fetchGoldPrice, 180000); 
     </script>
-</body>
-</html>
